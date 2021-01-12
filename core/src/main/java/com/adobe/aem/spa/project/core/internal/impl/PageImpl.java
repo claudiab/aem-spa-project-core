@@ -30,6 +30,7 @@ import org.apache.sling.models.annotations.via.ResourceSuperType;
 import org.apache.sling.models.factory.ModelFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.osgi.service.component.annotations.Reference;
 
 import com.adobe.aem.spa.project.core.internal.impl.utils.HierarchyUtils;
 import com.adobe.aem.spa.project.core.internal.impl.utils.RequestUtils;
@@ -42,6 +43,7 @@ import com.adobe.cq.export.json.hierarchy.type.HierarchyTypes;
 import com.adobe.cq.wcm.core.components.models.NavigationItem;
 import com.day.cq.wcm.api.designer.Style;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.sling.settings.SlingSettingsService;
 
 /**
  * Page that allows the retrieval of the model in JSON format with hierarchical structures of more than one page. <br>
@@ -109,6 +111,14 @@ public class PageImpl implements Page {
 
     private com.day.cq.wcm.api.Page rootPage;
 
+    //somehow figure out these 2. run modes?
+    // private boolean isAuthor  = false;
+    //configuration value? style?
+    private boolean useExtension = false;
+
+    @Reference
+    private SlingSettingsService slingSettingsService;
+
     /**
      * Package-private setter for descendedPageModels (required for tests)
      */
@@ -133,7 +143,9 @@ public class PageImpl implements Page {
     @Override
     public Map<String, ? extends Page> getExportedChildren() {
         if (descendedPageModels == null) {
-            setDescendedPageModels(HierarchyUtils.getDescendantsModels(request, currentPage, currentStyle, modelFactory));
+            // setDescendedPageModels(HierarchyUtils.getDescendantsModels(request, currentPage, currentStyle, modelFactory));
+            setDescendedPageModels(HierarchyUtils.getDescendantsModels(request, currentPage, currentStyle, modelFactory, isAuthor(), useExtension));
+
         }
 
         return descendedPageModels;
@@ -142,14 +154,18 @@ public class PageImpl implements Page {
     @NotNull
     @Override
     public String getExportedPath() {
-        return currentPage.getPath();
+        // return currentPage.getPath();
+        return RequestUtils.getURL(request, currentPage, isAuthor(), useExtension );
+
     }
 
     @Nullable
     @Override
     public String getHierarchyRootJsonExportUrl() {
         if (isRootPage()) {
-            return RequestUtils.getPageJsonExportUrl(request, currentPage);
+            // return RequestUtils.getPageJsonExportUrl(request, currentPage);
+            return RequestUtils.getPageJsonExportUrl(request, currentPage, isAuthor(), useExtension);
+
         }
 
         if (rootPage == null) {
@@ -157,7 +173,9 @@ public class PageImpl implements Page {
         }
 
         if (rootPage != null) {
-            return RequestUtils.getPageJsonExportUrl(request, rootPage);
+            // return RequestUtils.getPageJsonExportUrl(request, rootPage);
+            return RequestUtils.getPageJsonExportUrl(request, rootPage, isAuthor(), useExtension);
+
         }
         return null;
     }
@@ -307,10 +325,18 @@ public class PageImpl implements Page {
         return delegate.hasCloudconfigSupport();
     }
 
-    // Delegated to Page v2 
+    // Delegated to Page v2
     @NotNull
     @Override
     public Set<String> getComponentsResourceTypes() {
         return delegate.getComponentsResourceTypes();
+    }
+
+    public boolean isAuthor() {
+        return this.slingSettingsService.getRunModes().contains("author");
+    }
+
+    public boolean isExtensionEnabled(){
+        
     }
 }

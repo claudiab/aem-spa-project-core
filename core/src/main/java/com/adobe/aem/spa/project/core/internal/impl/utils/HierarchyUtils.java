@@ -299,7 +299,7 @@ public class HierarchyUtils {
      */
     @NotNull
     public static Map<String, Page> getDescendantsModels(SlingHttpServletRequest request, com.day.cq.wcm.api.Page currentPage,
-            Style currentStyle, ModelFactory modelFactory) {
+            Style currentStyle, ModelFactory modelFactory, boolean isAuthor, boolean useExtension) {
         int pageTreeTraversalDepth = StyleUtils.getPageTreeDepth(currentStyle, PN_STRUCTURE_DEPTH);
 
         List<Pattern> pageFilterPatterns = HierarchyUtils.getStructurePatterns(request, currentStyle);
@@ -320,7 +320,9 @@ public class HierarchyUtils {
         for (com.day.cq.wcm.api.Page childPage : descendants) {
             Page descendantModel = getDescendantModel(childPage, slingRequestWrapper, modelFactory);
             if (descendantModel != null) {
-                itemWrappers.put(childPage.getPath(), descendantModel);
+                // itemWrappers.put(childPage.getPath(), descendantModel);
+                final String path = (isAuthor) ?  childPage.getPath() : RequestUtils.getURL(request, childPage, isAuthor, useExtension );
+                itemWrappers.put(path, descendantModel);
             }
         }
 

@@ -5,7 +5,7 @@
     <artifactId>spa.project.core</artifactId>
     <packaging>pom</packaging>
     <version>1.2.1-SNAPSHOT</version>
-    <name>AEM SPA Project Core</name>
+    <name>AEM SPA Project Core (claudia local)</name>
     <description>spa-project-core</description>
     <url>https://github.com/adobe/aem-spa-project-core</url>
 
@@ -31,7 +31,7 @@
         <sling.password>admin</sling.password>
         <vault.user>admin</vault.user>
         <vault.password>admin</vault.password>
-        <core.wcm.components.version>2.11.1</core.wcm.components.version>
+        <core.wcm.components.version>2.13.2</core.wcm.components.version>
         <bnd.version>4.2.0</bnd.version>
         <maven.release.version>2.5.3</maven.release.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -691,7 +691,7 @@
             <dependency>
                 <groupId>com.adobe.aem</groupId>
                 <artifactId>uber-jar</artifactId>
-                <version>6.4.2</version>
+                <version>6.5.5</version>
                 <classifier>apis</classifier>
                 <scope>provided</scope>
             </dependency>
